@@ -326,7 +326,7 @@
         </div>
 
         <div class="btn-wrap">
-            <a href="/app-release.apk" class="download-btn">
+            <a href="https://github.com/F1rst07/schoolbin-ai-download/releases/download/v1.0.0/app-release.apk" class="download-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
                 <span>ดาวน์โหลดแอป</span>
             </a>
@@ -407,7 +407,7 @@
             container.appendChild(dot);
         });
 
-        const downloadUrl = window.location.origin + '/app-release.apk';
+        const downloadUrl = 'https://github.com/F1rst07/schoolbin-ai-download/releases/download/v1.0.0/app-release.apk';
         const qrSize = window.innerWidth <= 360 ? 150 : window.innerWidth <= 480 ? 170 : 190;
         new QRCode(document.getElementById('qrcode'), {
             text: downloadUrl,
