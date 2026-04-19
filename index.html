@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolBin AI - ดาวน์โหลดแอปพลิเคชัน</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(180deg, #026670 0%, #038C9B 50%, #0AD1DF 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        /* ─── Floating particles ─── */
+        @keyframes floatDot {
+            0%   { transform: translateY(0) scale(1);   opacity: 0.18; }
+            30%  { opacity: 0.85; }
+            60%  { transform: translateY(-18px) scale(1.1); opacity: 0.85; }
+            100% { transform: translateY(0) scale(1);   opacity: 0.18; }
+        }
+        @keyframes floatDotSlow {
+            0%   { transform: translateY(0) translateX(0)  scale(1);   opacity: 0.12; }
+            40%  { transform: translateY(-12px) translateX(6px) scale(1.15); opacity: 0.8; }
+            70%  { transform: translateY(-8px) translateX(-4px) scale(0.95); opacity: 0.65; }
+            100% { transform: translateY(0) translateX(0)  scale(1);   opacity: 0.12; }
+        }
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 0 6px rgba(255,255,255,0.5);
+            pointer-events: none;
+        }
+
+        /* ─── Entrance animations ─── */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 12px 32px rgba(2,102,112,0.25), 0 0 0 0 rgba(3,140,155,0.15); }
+            50%      { box-shadow: 0 12px 32px rgba(2,102,112,0.25), 0 0 0 10px rgba(3,140,155,0); }
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes btnGlow {
+            0%, 100% { box-shadow: 0 4px 16px rgba(3,140,155,0.3); }
+            50%      { box-shadow: 0 6px 28px rgba(3,140,155,0.5); }
+        }
+
+        /* ─── Card ─── */
+        .card {
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 44px 36px 36px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow:
+                0 24px 80px rgba(0,0,0,0.18),
+                0 0 0 1px rgba(255,255,255,0.15) inset;
+            position: relative;
+            z-index: 10;
+            animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        /* ─── Logo ─── */
+        .logo-wrap {
+            display: inline-block;
+            margin-bottom: 16px;
+            animation: scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+        }
+        .logo {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            display: block;
+            border-radius: 22px;
+            box-shadow: 0 12px 32px rgba(2,102,112,0.25);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        /* ─── Title ─── */
+        .app-name {
+            font-size: 26px;
+            font-weight: 800;
+            color: #026670;
+            margin-bottom: 2px;
+            letter-spacing: -0.02em;
+            animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+        }
+        .tagline {
+            font-size: 13px;
+            font-weight: 500;
+            color: #8DA0AE;
+            margin-bottom: 6px;
+            letter-spacing: 0.02em;
+            animation: fadeSlideUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.28s both;
+        }
+
+        /* ─── Meta badges ─── */
+        .meta-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 22px;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+        .badge-version {
+            background: #E8F8F8;
+            color: #038C9B;
+            border: 1px solid #C8ECED;
+        }
+        .badge-size {
+            background: #F0F4F8;
+            color: #5A6B7A;
+            border: 1px solid #DFE5EB;
+        }
+        .badge-android {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #C8E6C9;
+        }
+        .badge svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+        /* ─── Divider ─── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #D8E4EA, transparent);
+            margin: 0 auto 22px;
+            width: 80%;
+            animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
+        }
+
+        /* ─── QR Section ─── */
+        .qr-section {
+            animation: scaleIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+            margin-bottom: 20px;
+        }
+        .qr-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8DA0AE;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+        .qr-wrap {
+            display: inline-block;
+            padding: 14px;
+            background: #FAFCFC;
+            border: 1.5px solid #E4EDEF;
+            border-radius: 18px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .qr-wrap:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 28px rgba(3,140,155,0.12);
+        }
+        .qr-wrap canvas, .qr-wrap img {
+            border-radius: 8px;
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* ─── Download button ─── */
+        .btn-wrap {
+            animation: fadeSlideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+            margin-bottom: 20px;
+        }
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 280px;
+            background: linear-gradient(135deg, #038C9B 0%, #026670 100%);
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 28px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s, filter 0.2s;
+            animation: btnGlow 3s ease-in-out 1.5s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        .download-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out 2s infinite;
+        }
+        .download-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 32px rgba(3,140,155,0.45);
+            filter: brightness(1.06);
+        }
+        .download-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .download-btn svg { width: 20px; height: 20px; position: relative; z-index: 1; }
+        .download-btn span { position: relative; z-index: 1; }
+
+        /* ─── Footer note ─── */
+        .footer-note {
+            animation: fadeSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
+        }
+        .note {
+            font-size: 12px;
+            font-weight: 500;
+            color: #9AABB8;
+            line-height: 1.7;
+        }
+        .note-warn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            padding: 6px 16px;
+            background: rgba(255,248,238,0.7);
+            border-radius: 20px;
+            font-size: 10.5px;
+            font-weight: 500;
+            color: #B89545;
+            white-space: nowrap;
+        }
+        .note-warn svg { flex-shrink: 0; width: 12px; height: 12px; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 480px) {
+            body { padding: 16px 12px; }
+            .card { padding: 32px 22px 28px; border-radius: 22px; }
+            .logo { width: 72px; height: 72px; border-radius: 18px; }
+            .app-name { font-size: 22px; }
+            .tagline { font-size: 12px; }
+            .meta-row { gap: 6px; }
+            .badge { font-size: 10.5px; padding: 4px 10px; }
+            .qr-label { font-size: 11px; }
+            .qr-wrap { padding: 10px; border-radius: 14px; }
+            .download-btn { padding: 13px 24px; font-size: 15px; border-radius: 14px; }
+            .note { font-size: 11px; }
+        }
+        @media (max-width: 360px) {
+            body { padding: 10px 8px; }
+            .card { padding: 26px 16px 22px; border-radius: 18px; }
+            .logo { width: 64px; height: 64px; border-radius: 16px; }
+            .app-name { font-size: 20px; }
+            .meta-row { flex-wrap: wrap; gap: 5px; }
+            .badge { font-size: 10px; }
+            .download-btn { padding: 12px 20px; font-size: 14px; }
+        }
+        @media (min-width: 768px) {
+            .card { padding: 48px 44px 40px; }
+            .logo { width: 96px; height: 96px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles"></div>
+
+    <div class="card">
+        <div class="logo-wrap">
+            <img src="/logo.png" alt="SchoolBin AI" class="logo">
+        </div>
+        <h1 class="app-name">SchoolBin AI</h1>
+        <p class="tagline">ระบบคัดแยกขยะอัจฉริยะสำหรับโรงเรียน</p>
+
+        <div class="meta-row">
+            <span class="badge badge-version">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4M5 11l7-7 7 7"/></svg>
+                v1.0.0
+            </span>
+            <span class="badge badge-size">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="3"/><path d="M12 8v8m-4-4h8"/></svg>
+                68.5 MB
+            </span>
+            <span class="badge badge-android">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.523 2.24a.75.75 0 010 1.06L15.78 5.042A8.964 8.964 0 0121 12a9 9 0 11-18 0 8.964 8.964 0 015.22-6.958L6.477 3.3a.75.75 0 011.06-1.06l2.014 2.013a8.932 8.932 0 012.449-.34c.86 0 1.69.12 2.478.347L16.463 2.24a.75.75 0 011.06 0zM10 10.5a1 1 0 11-2 0 1 1 0 012 0zm6 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                Android
+            </span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="qr-section">
+            <p class="qr-label">สแกนเพื่อติดตั้ง</p>
+            <div class="qr-wrap"><div id="qrcode"></div></div>
+        </div>
+
+        <div class="btn-wrap">
+            <a href="/app-release.apk" class="download-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                <span>ดาวน์โหลดแอป</span>
+            </a>
+        </div>
+
+        <div class="footer-note">
+            <p class="note">ใช้กล้องมือถือสแกน QR Code<br>หรือกดปุ่มด้านบนเพื่อดาวน์โหลดโดยตรง</p>
+            <div class="note-warn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                อนุญาต "แหล่งที่ไม่รู้จัก" ในการตั้งค่าก่อนติดตั้ง
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const PARTICLES = [
+            { x:3,  t:4,  s:5, d:6,  delay:0   },
+            { x:10, t:18, s:4, d:8,  delay:1.2 },
+            { x:16, t:42, s:7, d:7,  delay:0.5 },
+            { x:6,  t:65, s:4, d:9,  delay:2.8 },
+            { x:20, t:80, s:6, d:6,  delay:1.7 },
+            { x:28, t:10, s:4, d:11, delay:0.3 },
+            { x:36, t:32, s:8, d:8,  delay:3.2 },
+            { x:26, t:55, s:4, d:7,  delay:1.0 },
+            { x:40, t:72, s:6, d:9,  delay:4.1 },
+            { x:33, t:90, s:4, d:6,  delay:0.7 },
+            { x:48, t:6,  s:7, d:10, delay:2.3 },
+            { x:53, t:25, s:4, d:7,  delay:1.5 },
+            { x:46, t:48, s:6, d:8,  delay:3.8 },
+            { x:58, t:68, s:8, d:6,  delay:0.9 },
+            { x:50, t:86, s:4, d:11, delay:2.1 },
+            { x:66, t:13, s:6, d:9,  delay:4.5 },
+            { x:73, t:36, s:4, d:7,  delay:1.3 },
+            { x:61, t:58, s:7, d:8,  delay:0.6 },
+            { x:78, t:76, s:5, d:6,  delay:3.0 },
+            { x:68, t:91, s:4, d:10, delay:1.8 },
+            { x:83, t:8,  s:7, d:8,  delay:0.4 },
+            { x:90, t:28, s:4, d:7,  delay:2.6 },
+            { x:86, t:50, s:6, d:9,  delay:1.1 },
+            { x:94, t:70, s:4, d:6,  delay:3.5 },
+            { x:80, t:86, s:8, d:11, delay:0.2 },
+            { x:14, t:35, s:4, d:7,  delay:4.8 },
+            { x:43, t:16, s:6, d:8,  delay:2.0 },
+            { x:71, t:60, s:4, d:9,  delay:0.8 },
+            { x:23, t:93, s:5, d:6,  delay:3.3 },
+            { x:56, t:42, s:4, d:10, delay:1.6 },
+            { x:2,  t:50, s:6, d:7,  delay:2.5 },
+            { x:17, t:75, s:4, d:9,  delay:0.1 },
+            { x:31, t:20, s:7, d:6,  delay:3.7 },
+            { x:44, t:62, s:4, d:8,  delay:1.4 },
+            { x:62, t:84, s:6, d:7,  delay:4.2 },
+            { x:76, t:22, s:4, d:10, delay:0.9 },
+            { x:87, t:44, s:8, d:8,  delay:2.3 },
+            { x:96, t:88, s:4, d:6,  delay:1.9 },
+            { x:9,  t:30, s:5, d:9,  delay:3.6 },
+            { x:37, t:8,  s:4, d:7,  delay:0.4 },
+            { x:52, t:96, s:6, d:8,  delay:2.7 },
+            { x:64, t:38, s:4, d:6,  delay:1.0 },
+            { x:79, t:64, s:7, d:10, delay:4.4 },
+            { x:91, t:14, s:4, d:7,  delay:0.7 },
+            { x:20, t:52, s:5, d:8,  delay:3.1 },
+            { x:41, t:28, s:4, d:9,  delay:1.5 },
+            { x:59, t:78, s:6, d:6,  delay:2.9 },
+            { x:74, t:46, s:4, d:7,  delay:0.3 },
+            { x:85, t:96, s:7, d:11, delay:4.0 },
+            { x:97, t:55, s:4, d:8,  delay:1.2 },
+        ];
+
+        const container = document.getElementById('particles');
+        PARTICLES.forEach((p, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'particle';
+            dot.style.width = p.s + 'px';
+            dot.style.height = p.s + 'px';
+            dot.style.left = p.x + '%';
+            dot.style.top = p.t + '%';
+            dot.style.animation = `${i % 2 === 0 ? 'floatDot' : 'floatDotSlow'} ${p.d}s ease-in-out ${p.delay}s infinite`;
+            container.appendChild(dot);
+        });
+
+        const downloadUrl = window.location.origin + '/app-release.apk';
+        const qrSize = window.innerWidth <= 360 ? 150 : window.innerWidth <= 480 ? 170 : 190;
+        new QRCode(document.getElementById('qrcode'), {
+            text: downloadUrl,
+            width: qrSize,
+            height: qrSize,
+            colorDark: '#026670',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+</html>
