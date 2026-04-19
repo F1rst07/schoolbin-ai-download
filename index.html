@@ -10,10 +10,16 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        html {
+            background: #026670;
+            overscroll-behavior: none;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(180deg, #026670 0%, #038C9B 50%, #0AD1DF 100%);
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -21,6 +27,8 @@
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
+            overscroll-behavior: none;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* ─── Floating particles ─── */
